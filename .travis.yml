@@ -1,0 +1,5 @@
+language: crystal
+before_install:
+  - sudo apt-get update
+  - sudo apt-get install imagemagick libmagickcore-dev libmagickwand-dev
+script: make test
