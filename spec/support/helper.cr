@@ -36,11 +36,11 @@ module Helper
   end
 
   def get_tempfile(path = "tempfile")
-    CryMagick::Tempfile.new(path)
+    Tempfile.new(path)
   end
 
-  def random_path(basename = "")
-    tempfile = CryMagick::Tempfile.new(basename)
+  def random_path(basename = "tempfile")
+    tempfile = Tempfile.new(basename)
     tempfile.path
   end
 end

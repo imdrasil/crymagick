@@ -226,7 +226,7 @@ describe CryMagick::Image do
       subject = described_class.open(image_path(:animation))
       subject.format(:jpg, "-1")
 
-      expect(Dir[subject.path.sub(/\..+$/, ".*")].size).must_equal 21
+      expect(Dir[subject.path.sub(/\.jpg$/, "*")].size).must_equal 21
     end
 
     it "reformats multi-image formats to a single image" do
@@ -339,10 +339,6 @@ describe CryMagick::Image do
   end
 
   describe "#details" do
-    # TODO: add after implementation
-  end
-
-  describe "#data" do
     # TODO: add after implementation
   end
 
@@ -490,8 +486,8 @@ describe CryMagick::Image do
       let(:subject) { described_class.new(image_path(:jpg)) }
 
       it "returns image JSON data" do
-        expect(subject.data["format"]).must_equal "JPEG"
-        expect(subject.data["colorspace"]).must_equal "sRGB"
+        expect(subject.data["format"].as_s).must_equal "JPEG"
+        expect(subject.data["colorspace"].as_s).must_equal "sRGB"
       end
     end
 
@@ -499,8 +495,8 @@ describe CryMagick::Image do
       let(:subject) { described_class.new(image_path(:png)) }
 
       it "returns image JSON data" do
-        expect(subject.data["format"]).must_equal "PNG"
-        expect(subject.data["colorspace"]).must_equal "sRGB"
+        expect(subject.data["format"].as_s).must_equal "PNG"
+        expect(subject.data["colorspace"].as_s).must_equal "sRGB"
       end
     end
   end

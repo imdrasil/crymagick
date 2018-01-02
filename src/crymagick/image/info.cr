@@ -95,44 +95,8 @@ module CryMagick
         @signature ||= raw("%#")
       end
 
-      def data
-        raise "Not implemented"
-      end
-
       def details
         raise "Not implemented yet"
-        raise "CryMagick::Image#details is deprecated, as it was causing too many parsing errors. You should use CryMagick::Image#data instead" if MiniMagick.imagemagick?
-
-        @details ||= begin
-          details_string = identify(&.verbose)
-          key_stack = [] of String
-          details_string.lines.to_a[1..-1].each_with_object({} of String => String) do |line, details_hash|
-            next if !line.valid_encoding? || line.strip.length.zero?
-
-            level = line[/^\s*/].length / 2 - 1
-            if level >= 0
-              until key_stack.size <= level
-                key_stack.pop
-              end
-            else
-              # Some metadata, such as SVG clipping paths, will be saved without
-              # indentation, resulting in a level of -1
-              last_key = details_hash.keys.last
-              details_hash[last_key] = "" if details_hash[last_key].empty?
-              details_hash[last_key] += line
-              next
-            end
-
-            key, _, value = line.partition(/:[\s\n]/).map(&:strip)
-            hash = key_stack.inject(details_hash) { |hash, key| hash.fetch(key) }
-            if value.empty?
-              hash[key] = {} of String => String
-              key_stack.push key
-            else
-              hash[key] = value
-            end
-          end
-        end
       end
 
       def data

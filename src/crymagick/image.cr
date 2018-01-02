@@ -2,7 +2,11 @@ require "file_utils"
 
 module CryMagick
   class Image
-    # reads given file
+    # =============================
+    # static
+    # =============================
+
+    # Reads given string-based file with optional extension.
     def self.read(file : String, ext : String = "")
       create(ext) { |temp| temp.print(file) }
     end
@@ -11,7 +15,7 @@ module CryMagick
       create(ext) { |temp| temp.print(file.gets_to_end) }
     end
 
-    # creates new Image from given path
+    # Creates new Image from given path
     def self.open(path : String, ext : String? = nil)
       raise "File is not exists" unless File.exists?(path)
       ext ||= File.extname(path)
@@ -21,7 +25,7 @@ module CryMagick
       end
     end
 
-    # creates tempfile and yield it to write
+    # Creates tempfile and yields it for writing.
     def self.create(ext : String? = nil, validate : Bool = Configuration.validate_on_create)
       tempfile = CryMagick::Utilities.tempfile(ext.to_s.downcase) { |t| yield t }
       new(tempfile.path, tempfile).tap do |image|
@@ -29,7 +33,7 @@ module CryMagick
       end
     end
 
-    getter path, tempfile : CryMagick::Tempfile?
+    getter path, tempfile : ::Tempfile?
 
     def tempfile!
       @tempfile.not_nil!
@@ -105,19 +109,19 @@ module CryMagick
       layers
     end
 
-    def get_pixels
-      output = Tool::Convert.build do |con|
-        convert << path
-        convert.depth(8)
-        convert << "RGB:-"
-      end
+    # def get_pixels
+    #   output = Tool::Convert.build do |con|
+    #     convert << path
+    #     convert.depth(8)
+    #     convert << "RGB:-"
+    #   end
 
-      pixel_array = output.unpack("C*")
-      pixels = pixel_array.each_slice(3).each_slice(width).to_a
-      output.clear
-      pixel_array.clear
-      pixels
-    end
+    #   pixel_array = output.unpack("C*")
+    #   pixels = pixel_array.each_slice(3).each_slice(width).to_a
+    #   output.clear
+    #   pixel_array.clear
+    #   pixels
+    # end
 
     # page = -1 for all frames
     # TODO: fix converting several frames - point current image to first one (now it points to empty img)
