@@ -207,7 +207,7 @@ module CryMagick
     def destroy!
       return unless @tempfile
       FileUtils.rm_rf(tempfile!.path.sub(/mpc$/, "cache")) if tempfile!.path.ends_with?(".mpc")
-      tempfile!.unlink
+      tempfile!.delete
     end
 
     def identify

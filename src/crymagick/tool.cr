@@ -1,6 +1,6 @@
 module CryMagick
   class Tool
-    CREATION_OPERATORS = %w(xc canvas logo rose gradient radial-gradient plasma pattern label caption text)
+    CREATION_OPERATORS = %w(xc canvas logo rose gradient radial-gradient plasma pattern label caption text pango)
 
     def self.build(name : String) : String
       instance = new(name)

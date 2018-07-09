@@ -4,14 +4,14 @@ module CryMagick
   class Image
     class Info
       ASCII_ENCODED_EXIF_KEYS = %w(ExifVersion FlashPixVersion)
-      ALL_ATTRS               = %w(format mime_type width height dimensions size human_size colorspace exif resolution signature)
-      STRING_ATTRS            = %w(format mime_type human_size colorspace signature data details)
+      ALL_ATTRS               = %w(format mime_type width height dimensions size human_size colorspace mime_type exif resolution signature details)
+      STRING_ATTRS            = %w(format mime_type human_size colorspace signature details)
       INT_ATTR                = %w(width height)
 
       @dimensions : Tuple(Int32, Int32)?
       @size : UInt64?
       @exif : Hash(String, String)?
-      @data : Hash(String, Hash(String, String))?
+      @data : Hash(String, JSON::Any)?
       @details : Hash(String, Hash(String, String))?
 
       {% for var in STRING_ATTRS %}
@@ -100,13 +100,15 @@ module CryMagick
       end
 
       def data
-        json = Tool::Convert.build do |convert|
-          convert << path
-          convert << "json:"
-        end
+        @data ||= begin
+          json = Tool::Convert.build do |convert|
+            convert << path
+            convert << "json:"
+          end
 
-        data = JSON.parse(json)
-        data["image"]
+          data = JSON.parse(json)
+          (data.as_a? ? data[0]["image"] : data["image"]).as_h
+        end
       end
 
       {% for attr in %w(format width height dimensions size human_size) %}
@@ -155,8 +157,8 @@ module CryMagick
         return encoded_value unless encoded_value.includes?(",")
         arr = [] of Char
         res = encoded_value.scan(/\d+/)
-        res.size.times do |i|
-          arr << res[i].to_s.to_i.chr
+        res.each do |entry|
+          arr << entry[0].to_i.chr
         end
         arr.join
       end

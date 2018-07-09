@@ -1,5 +1,9 @@
 language: crystal
+dist: trusty
+sudo: required
+
+script: make seq
+
+# Install newer libwebp and imagemagick
 before_install:
-  - sudo apt-get update
-  - sudo apt-get install imagemagick libmagickcore-dev libmagickwand-dev
-script: make test
+  - bash .travis.install_imagemagick.sh
