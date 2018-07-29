@@ -208,14 +208,14 @@ describe CryMagick::Image do
       expect(File.exists?(old_path)).must_equal false
     end
 
-    it "deletes *.cache files generated from .mpc" do
-      image = described_class.open(image_path)
-      image.format("mpc")
-      cache_path = image.path.sub(/mpc$/, "cache")
-      image.format("png")
+    # it "deletes *.cache files generated from .mpc" do
+    #   image = described_class.open(image_path)
+    #   image.format("mpc")
+    #   cache_path = image.path.sub(/mpc$/, "cache")
+    #   image.format("png")
 
-      expect(File.exists?(cache_path)).must_equal false
-    end
+    #   expect(File.exists?(cache_path)).must_equal false
+    # end
 
     it "doesn't delete itself when formatted to the same format" do
       subject.format(subject.type.downcase)

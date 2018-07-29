@@ -14,13 +14,11 @@ dependencies:
 
 ## Requirements
 
-ImageMagick command-line tool has to be installed. You can check if you have it installed by running
+ImageMagick command-line tool >= 7.0.8  has to be installed. You can check if you have it installed by running
 
 ```shell
 $ convert -version
-Version: ImageMagick 6.8.9-9 Q16 x86_64 2017-05-26 http://www.imagemagick.org
-Copyright: Copyright (C) 1999-2014 ImageMagick Studio LLC
-Features: DPC Modules OpenMP
+Version: ImageMagick 7.0.8-6 Q16 x86_64 2018-07-10 https://www.imagemagick.org
 ```
 
 ## Usage
@@ -67,7 +65,7 @@ The yielded builder is an instance of `CryMagick::Tool::Mogrify`.
 
 A `CryMagick::Image` has various handy attributes.
 
-```
+```crystal
 image.type        #=> "JPEG"
 image.mime_type   #=> "image/jpeg"
 image.width       #=> 250
@@ -201,7 +199,7 @@ convert.rotate(90)
 convert.distort("Perspective", "0,0,0,0 0,45,0,45 69,0,60,10 69,45,60,35")
 ```
 
-#### Chainging
+#### Chaining
 
 ```crystal
 CryMagick::Tool::Convert.build do |convert|
@@ -238,8 +236,7 @@ end
 
 ## Troubleshooting
 
-`CryMagick::Tool` uses `method_missing` macro so all method calling with invalid arguments will go there. Fot now all dynamically generated methods are logged into stdout during compilation time.
-```
+`CryMagick::Tool` uses `method_missing` macro so all method calling with invalid arguments will go there. For now all dynamically generated methods are logged into stdout during compilation time.
 
 ## Development
 
@@ -264,4 +261,3 @@ Next feature:
 ## Contributors
 
 - [imdrasil](https://github.com/imdrasil) Roman Kalnytskyi - creator, maintainer
-
