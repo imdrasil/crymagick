@@ -24,6 +24,8 @@ module Helper
                "rgb.png"
              when :rgb_tmp
                "rgb_tmp.png"
+             when :get_pixels
+               "get_pixels.png"
              else
                raise "Image #{type} doesn't exist"
              end
@@ -42,5 +44,11 @@ module Helper
   def random_path(basename = "tempfile")
     tempfile = Tempfile.new(basename)
     tempfile.path
+  end
+
+  def pack_array(array)
+    io = IO::Memory.new
+    array.each { |e| io.write_bytes(e) }
+    io.to_s
   end
 end

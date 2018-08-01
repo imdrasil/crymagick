@@ -2,6 +2,8 @@ require "file_utils"
 
 module CryMagick
   class Image
+    alias Pixel = {UInt8, UInt8, UInt8}
+
     # =============================
     # static
     # =============================
@@ -33,7 +35,28 @@ module CryMagick
       end
     end
 
+    def self.import_pixels(blob : Array(Int), columns : Int, rows : Int, depth : Int, map : String | Symbol, format : String = "png")
+      io = IO::Memory.new
+      blob.each { |e| io.write_bytes(e) }
+      import_pixels(io.to_slice, columns, rows, depth, map, format)
+    end
+
+    def self.import_pixels(blob : Slice(Int), columns : Int, rows : Int, depth : Int, map : String | Symbol, format : String = "png")
+      target_image = create(".#{format}", false) {}
+      create(".dat", false) { |f| f.write(blob) }.tap do |image|
+        Tool::Convert.build do |convert|
+          convert.size "#{columns}x#{rows}"
+          convert.depth depth
+          convert << "#{map}:#{image.path}"
+          convert << target_image.path
+        end
+      end.destroy!
+
+      target_image
+    end
+
     getter path, tempfile : ::Tempfile?
+    protected setter path
 
     def tempfile!
       @tempfile.not_nil!
@@ -109,19 +132,28 @@ module CryMagick
       layers
     end
 
-    # def get_pixels
-    #   output = Tool::Convert.build do |con|
-    #     convert << path
-    #     convert.depth(8)
-    #     convert << "RGB:-"
-    #   end
+    def get_pixels
+      convert = Tool::Convert.new
+      convert << path
+      convert.depth(8)
+      convert << "RGB:-"
 
-    #   pixel_array = output.unpack("C*")
-    #   pixels = pixel_array.each_slice(3).each_slice(width).to_a
-    #   output.clear
-    #   pixel_array.clear
-    #   pixels
-    # end
+      # Do not use `convert.call` here. We need the whole binary (unstripped) output here.
+      output, _status, _ = Shell.new.run(convert.command)
+
+      slice = output.to_slice.to_a
+      _width = width
+      _height = slice.size / (3 * _width)
+      position = 0
+
+      Array(Array(Pixel)).new(_height) do |i|
+        Array(Pixel).new(_width) do |j|
+          temp = {slice[position], slice[position + 1], slice[position + 2]}
+          position += 3
+          temp
+        end
+      end
+    end
 
     # page = -1 for all frames
     # TODO: fix converting several frames - point current image to first one (now it points to empty img)
