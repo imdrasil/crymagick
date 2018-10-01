@@ -1,4 +1,5 @@
 require "file_utils"
+require "tempfile"
 
 module CryMagick
   class Image
