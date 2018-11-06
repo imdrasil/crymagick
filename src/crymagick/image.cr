@@ -1,5 +1,4 @@
 require "file_utils"
-require "tempfile"
 
 module CryMagick
   class Image
@@ -56,7 +55,7 @@ module CryMagick
       target_image
     end
 
-    getter path, tempfile : ::Tempfile?
+    getter path, tempfile : ::File?
     protected setter path
 
     def tempfile!
