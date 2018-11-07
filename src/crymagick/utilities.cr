@@ -8,7 +8,7 @@ module CryMagick
     end
 
     def self.tempfile(ext)
-      ::Tempfile.new("crymagick", ext)
+      ::File.tempfile("crymagick", ext)
     end
   end
 end

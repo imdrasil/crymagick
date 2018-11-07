@@ -38,11 +38,11 @@ module Helper
   end
 
   def get_tempfile(path = "tempfile")
-    Tempfile.new(path)
+    File.tempfile(path)
   end
 
   def random_path(basename = "tempfile")
-    tempfile = Tempfile.new(basename)
+    tempfile = File.tempfile(basename)
     tempfile.path
   end
 
