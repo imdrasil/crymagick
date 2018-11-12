@@ -18,18 +18,17 @@ module CryMagick
     end
 
     # Creates new Image from given path
+    #
+    # TODO: allow to pass url
     def self.open(path : String, ext : String? = nil)
       raise "File is not exists" unless File.exists?(path)
       ext ||= File.extname(path)
-      # TODO: allow to pass url
-      File.open(path) do |f|
-        read(f, ext)
-      end
+      File.open(path) { |f| read(f, ext) }
     end
 
     # Creates tempfile and yields it for writing.
-    def self.create(ext : String? = nil, validate : Bool = Configuration.validate_on_create)
-      tempfile = CryMagick::Utilities.tempfile(ext.to_s.downcase) { |t| yield t }
+    def self.create(ext : String = "", validate : Bool = Configuration.validate_on_create)
+      tempfile = CryMagick::Utilities.tempfile(ext.downcase) { |t| yield t }
       new(tempfile.path, tempfile).tap do |image|
         image.validate! if validate
       end
@@ -55,7 +54,7 @@ module CryMagick
       target_image
     end
 
-    getter path, tempfile : ::Tempfile?
+    getter path, tempfile : ::File?
     protected setter path
 
     def tempfile!
@@ -156,15 +155,18 @@ module CryMagick
     end
 
     # page = -1 for all frames
+    #
     # TODO: fix converting several frames - point current image to first one (now it points to empty img)
     def format(_format, page : String = "0", read_options : Hash(String, String) = {} of String => String)
       new_temp_file = nil
-      new_path = if @tempfile
-                   new_temp_file = Utilities.tempfile(".#{_format}")
-                   new_temp_file.path
-                 else
-                   path.split(".")[0...-1].join("") + ".#{_format}"
-                 end
+      new_path =
+        if @tempfile
+          new_temp_file = Utilities.tempfile(".#{_format}")
+          new_temp_file.path
+        else
+          parts = path.split(".")
+          (parts.size == 1 ? parts[0] : parts[0...-1].join(""))  + ".#{_format}"
+        end
       input_path = path.clone
       input_path += "[#{page}]" if page != "-1" && !layer?
 
