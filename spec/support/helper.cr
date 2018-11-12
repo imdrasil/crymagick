@@ -42,8 +42,9 @@ module Helper
   end
 
   def random_path(basename = "tempfile")
-    tempfile = File.tempfile(basename)
-    tempfile.path
+    path = File.tempname(basename)
+    FileUtils.touch(path)
+    path
   end
 
   def pack_array(array)
