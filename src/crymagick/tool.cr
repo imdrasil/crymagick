@@ -101,7 +101,9 @@ module CryMagick
     # Currently notification about dynamically generated methods will be printed out
     # to stdout during compilation
     macro method_missing(call)
-      {% p "Dynamically generates method #{@type}##{call.id}".id %}
+      {% if flag?(:crymagick_debug) %}
+        {% p "#{@type}##{call.id} is generated".id %}
+      {% end %}
       def {{call.name.id}}(*args)
         send({{call.name.tr("_", "-").id.stringify}}, *args)
       end

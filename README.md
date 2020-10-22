@@ -10,6 +10,7 @@ Add this to your application's `shard.yml`:
 dependencies:
   crymagick:
     github: imdrasil/crymagick
+    version: 0.2.0
 ```
 
 ## Requirements
@@ -236,7 +237,14 @@ end
 
 ## Troubleshooting
 
-`CryMagick::Tool` uses `method_missing` macro so all method calling with invalid arguments will go there. For now all dynamically generated methods are logged into stdout during compilation time.
+`CryMagick::Tool` uses `method_missing` macro so any method invocation with the invalid arguments will create a new method. To get a list of generated methods add `crymagick_debug` flag:
+
+```shell
+$ crystal run ./src/target.cr -Dcrymagic_debug
+CryMagick::Tool::Mogrify#resize(_arg0) is generated
+CryMagick::Tool::Mogrify#colorspace(_arg0) is generated
+CryMagick::Tool::Mogrify#crop(_arg0) is generated
+```
 
 ## Development
 

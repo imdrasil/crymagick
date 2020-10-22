@@ -1,6 +1,7 @@
 module CryMagick
+  # :nodoc:
   module Utilities
-    # Raise temp file with given dot-based extension
+    # Yields temp file with given dot-based extension
     def self.tempfile(ext : String)
       ::File.tempfile("crymagick", ext) do |file|
         yield file
