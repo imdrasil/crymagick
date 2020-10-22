@@ -83,7 +83,7 @@ describe CryMagick::Image do
     let(:dimensions) { {325, 200} }
     let(:depth)      { 16 } # 16 bits (2 bytes) per pixel
     let(:map)        { "gray" }
-    let(:pixels)     { Array(Int16).new(dimensions[0] * dimensions[1]) { |i| i.to_i16 } }
+    let(:pixels)     { Array(Int16).new(dimensions[0] * dimensions[1]) { |i| (i / 2).to_i16 } }
 
     it "can import pixels with default format" do
       image = described_class.import_pixels(pixels, dimensions[0], dimensions[1], depth, map)

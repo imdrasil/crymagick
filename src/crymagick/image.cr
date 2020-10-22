@@ -145,8 +145,8 @@ module CryMagick
       _height = slice.size / (3 * _width)
       position = 0
 
-      Array(Array(Pixel)).new(_height) do |i|
-        Array(Pixel).new(_width) do |j|
+      Array(Array(Pixel)).new(_height.to_i) do |i|
+        Array(Pixel).new(_width.to_i) do |j|
           temp = {slice[position], slice[position + 1], slice[position + 2]}
           position += 3
           temp

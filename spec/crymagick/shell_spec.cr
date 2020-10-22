@@ -35,7 +35,7 @@ describe Shell do
       stderr = stderr.to_s
 
       expect(stdout).must_equal ""
-      expect(stderr).must_match("unable to open image 'foo'")
+      expect(stderr).must_match("unable to open image `foo'")
       expect(status).must_equal 256
     end
 
