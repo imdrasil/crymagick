@@ -133,7 +133,7 @@ module CryMagick
       end
 
       def raw(value)
-        @info["raw:#{value}"] ||= identify { |b| b.format(value) }
+        @info["raw:#{value}"] ||= identify(&.format(value))
       end
 
       def raw_exif(value)

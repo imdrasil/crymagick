@@ -140,6 +140,6 @@ describe CryMagick::Tool do
   it "doesn't raise errors when false is passed to the constructor" do
     subject.help
 
-    CryMagick::Tool::Identify.build({:whiny => false}) { |b| b.help }
+    CryMagick::Tool::Identify.build({:whiny => false}, &.help)
   end
 end

@@ -1,9 +1,0 @@
-language: crystal
-dist: xenial
-sudo: required
-
-script: make seq
-
-# Install newer libwebp and imagemagick
-before_install:
-  - bash .travis.install_imagemagick.sh

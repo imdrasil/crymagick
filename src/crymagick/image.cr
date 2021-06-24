@@ -10,11 +10,11 @@ module CryMagick
 
     # Reads given string-based file with optional extension.
     def self.read(file : String, ext : String = "")
-      create(ext) { |temp| temp.print(file) }
+      create(ext, &.print(file))
     end
 
     def self.read(file : IO, ext : String = "")
-      create(ext) { |temp| temp.print(file.gets_to_end) }
+      create(ext, &.print(file.gets_to_end))
     end
 
     # Creates new Image from given path
@@ -41,8 +41,8 @@ module CryMagick
     end
 
     def self.import_pixels(blob : Slice(Int), columns : Int, rows : Int, depth : Int, map : String | Symbol, format : String = "png")
-      target_image = create(".#{format}", false) {}
-      create(".dat", false) { |f| f.write(blob) }.tap do |image|
+      target_image = create(".#{format}", false) { }
+      create(".dat", false, &.write(blob)).tap do |image|
         Tool::Convert.build do |convert|
           convert.size "#{columns}x#{rows}"
           convert.depth depth
@@ -145,8 +145,8 @@ module CryMagick
       _height = slice.size / (3 * _width)
       position = 0
 
-      Array(Array(Pixel)).new(_height.to_i) do |i|
-        Array(Pixel).new(_width.to_i) do |j|
+      Array(Array(Pixel)).new(_height.to_i) do
+        Array(Pixel).new(_width.to_i) do
           temp = {slice[position], slice[position + 1], slice[position + 2]}
           position += 3
           temp
@@ -165,7 +165,7 @@ module CryMagick
           new_temp_file.path
         else
           parts = path.split(".")
-          (parts.size == 1 ? parts[0] : parts[0...-1].join(""))  + ".#{_format}"
+          (parts.size == 1 ? parts[0] : parts[0...-1].join("")) + ".#{_format}"
         end
       input_path = path.clone
       input_path += "[#{page}]" if page != "-1" && !layer?
@@ -235,7 +235,7 @@ module CryMagick
     end
 
     def collapse!(frame : Int32 = 0)
-      mogrify(frame) { |builder| builder.quality(100) }
+      mogrify(frame, &.quality(100))
     end
 
     def destroy!
@@ -264,7 +264,7 @@ module CryMagick
     def mogrify(page : Int32? = nil)
       Tool::Mogrify.build do |builder|
         yield builder
-        builder << (page ? "#{path}[#{page.to_s}]" : path)
+        builder << (page ? "#{path}[#{page}]" : path)
       end
       @info.clear
       self

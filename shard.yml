@@ -1,5 +1,5 @@
 name: crymagick
-version: 0.2.1
+version: 0.2.2
 
 authors:
   - Roman Kalnytskyi <moranibaca@gmail.com>
@@ -10,4 +10,7 @@ license: MIT
 development_dependencies:
   minitest:
     github: ysbaddaden/minitest.cr
-    version: 0.5.1
+    version: "1.0.1"
+  ameba:
+    github: crystal-ameba/ameba
+    version: "= 0.14.3"
