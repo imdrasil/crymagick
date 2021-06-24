@@ -5,7 +5,7 @@ describe Shell do
 
   describe "#run" do
     it "returns stdout, stderr and status" do
-      output = subject.run(%w[echo "asd"])
+      output = subject.run(["echo", %("asd")])
       expect([output[0].to_s, output[1].to_s, output[2]]).must_equal ["asd\n", "", 0]
     end
 
@@ -35,19 +35,19 @@ describe Shell do
       stderr = stderr.to_s
 
       expect(stdout).must_equal ""
-      expect(stderr).must_match("unable to open image `foo'")
+      expect(stderr).must_match(/unable to open image [`']foo'/)
       expect(status).must_equal 256
     end
 
     it "handles larger output" do
       # Timeout.timeout(1) do
-      stdout, a1, a2 = subject.execute(["convert", "#{image_path(:gif)}", "-"])
+      stdout = subject.execute(["convert", "#{image_path(:gif)}", "-"])[0]
       expect(stdout.to_s).must_match("GIF")
       # end
     end
 
     it "returns an appropriate response when command wasn't found" do
-      stdout, stderr, code = subject.execute(%w[unexisting command])
+      code = subject.execute(%w[unexisting command])[2]
       expect(code).must_equal 32512
     end
 
@@ -66,7 +66,7 @@ describe Shell do
     # end
 
     it "doesn't break on spaces" do
-      stdout, a1, a2 = subject.execute(["identify", "-format", "%w %h", image_path])
+      stdout = subject.execute(["identify", "-format", "%w %h", image_path])[0]
       expect(stdout.to_s).must_match(/\d+ \d+/)
     end
   end

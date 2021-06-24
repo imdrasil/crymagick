@@ -1,34 +1,35 @@
 module Helper
-  def image_path(type = :default)
+  def image_path(type = :default) # ameba:disable Metrics/CyclomaticComplexity
     if type != :jpg_without_extension
-      name = case type
-             when :default, :jpg
-               "default.jpg"
-             when :png
-               "engine.png"
-             when :animation, :gif
-               "animation.gif"
-             when :exif
-               "exif.jpg"
-             when :empty_identity_line
-               "empty_identity_line.png"
-             when :badly_encoded_line
-               "badly_encoded_line.jpg"
-             when :not
-               "not_an_image.cr"
-             when :colon
-               "with:colon.jpg"
-             when :clipping_path
-               "clipping_path.jpg"
-             when :rgb
-               "rgb.png"
-             when :rgb_tmp
-               "rgb_tmp.png"
-             when :get_pixels
-               "get_pixels.png"
-             else
-               raise "Image #{type} doesn't exist"
-             end
+      name =
+        case type
+        when :default, :jpg
+          "default.jpg"
+        when :png
+          "engine.png"
+        when :animation, :gif
+          "animation.gif"
+        when :exif
+          "exif.jpg"
+        when :empty_identity_line
+          "empty_identity_line.png"
+        when :badly_encoded_line
+          "badly_encoded_line.jpg"
+        when :not
+          "not_an_image.cr"
+        when :colon
+          "with:colon.jpg"
+        when :clipping_path
+          "clipping_path.jpg"
+        when :rgb
+          "rgb.png"
+        when :rgb_tmp
+          "rgb_tmp.png"
+        when :get_pixels
+          "get_pixels.png"
+        else
+          raise "Image #{type} doesn't exist"
+        end
       File.join("spec", "fixtures", name)
     else
       path = random_path

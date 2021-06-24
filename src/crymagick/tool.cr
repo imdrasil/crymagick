@@ -23,7 +23,7 @@ module CryMagick
 
     def call : String
       shell = Shell.new
-      stdout, status, stderr = shell.run(command, {:whiny => @whiny})
+      stdout = shell.run(command, {:whiny => @whiny})[0]
       stdout.to_s.strip
     end
 

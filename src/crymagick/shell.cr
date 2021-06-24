@@ -4,7 +4,7 @@ module CryMagick
       whiny = options.has_key?(:whiny) ? options[:whiny] : Configuration.whiny
       stdout, stderr, status = execute(command)
       if status != 0 && whiny
-        raise Error.new("`#{command.join(" ")}` failed with error(#{status}):\n#{stderr.to_s}\noutput:\n#{stdout}")
+        raise Error.new("`#{command.join(" ")}` failed with error(#{status}):\n#{stderr}\noutput:\n#{stdout}")
       end
       {stdout, stderr, status}
     end

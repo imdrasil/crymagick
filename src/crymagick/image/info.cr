@@ -128,12 +128,12 @@ module CryMagick
         @width = width.to_i
         @height = height.to_i
         @dimensions = {@width.not_nil!, @height.not_nil!}
-        @size = File.size(path)
+        @size = File.size(path).to_u64
         @human_size = size
       end
 
       def raw(value)
-        @info["raw:#{value}"] ||= identify { |b| b.format(value) }
+        @info["raw:#{value}"] ||= identify(&.format(value))
       end
 
       def raw_exif(value)

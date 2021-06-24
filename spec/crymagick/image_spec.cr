@@ -81,9 +81,9 @@ describe CryMagick::Image do
 
   describe ".import_pixels" do
     let(:dimensions) { {325, 200} }
-    let(:depth)      { 16 } # 16 bits (2 bytes) per pixel
-    let(:map)        { "gray" }
-    let(:pixels)     { Array(Int16).new(dimensions[0] * dimensions[1]) { |i| (i / 2).to_i16 } }
+    let(:depth) { 16 } # 16 bits (2 bytes) per pixel
+    let(:map) { "gray" }
+    let(:pixels) { Array(Int16).new(dimensions[0] * dimensions[1]) { |i| (i / 2).to_i16 } }
 
     it "can import pixels with default format" do
       image = described_class.import_pixels(pixels, dimensions[0], dimensions[1], depth, map)
@@ -147,11 +147,11 @@ describe CryMagick::Image do
   describe "#get_pixels" do
     @pix : Array(Array(CryMagick::Image::Pixel))?
 
-    let(:magenta) { {255,   0, 255} }
-    let(:gray)    { {128, 128, 128} }
-    let(:green)   { {  0, 255,   0} }
-    let(:cyan)    { {  0, 255, 255} }
-    let(:pix)     { subject.get_pixels }
+    let(:magenta) { {255, 0, 255} }
+    let(:gray) { {128, 128, 128} }
+    let(:green) { {0, 255, 0} }
+    let(:cyan) { {0, 255, 255} }
+    let(:pix) { subject.get_pixels }
     let(:subject) { described_class.open(image_path(:rgb)) }
 
     describe "without modifications" do
@@ -161,15 +161,15 @@ describe CryMagick::Image do
         end
       end
 
-      it("returns a magenta pixel") { expect(pix[3][3]  ).must_equal(magenta) }
-      it("returns a gray pixel")    { expect(pix[-4][-4]).must_equal(gray)    }
-      it("returns a green pixel")   { expect(pix[3][-4] ).must_equal(green)   }
-      it("returns a cyan pixel")    { expect(pix[-4][3] ).must_equal(cyan)    }
+      it("returns a magenta pixel") { expect(pix[3][3]).must_equal(magenta) }
+      it("returns a gray pixel") { expect(pix[-4][-4]).must_equal(gray) }
+      it("returns a green pixel") { expect(pix[3][-4]).must_equal(green) }
+      it("returns a cyan pixel") { expect(pix[-4][3]).must_equal(cyan) }
     end
 
     describe "after cropping" do
-      let(:cols)    { 10 }
-      let(:rows)    {  6 }
+      let(:cols) { 10 }
+      let(:rows) { 6 }
 
       before { subject.crop "#{cols}x#{rows}+3+3" }
 
@@ -183,10 +183,10 @@ describe CryMagick::Image do
         end
       end
 
-      it("returns a magenta pixel") { expect(pix[0][0]  ).must_equal(magenta)}
-      it("returns a gray pixel")    { expect(pix[-1][-1]).must_equal(gray)   }
-      it("returns a cyan pixel")    { expect(pix[-1][0] ).must_equal(cyan)   }
-      it("returns a green pixel")   { expect(pix[0][-1] ).must_equal(green)  }
+      it("returns a magenta pixel") { expect(pix[0][0]).must_equal(magenta) }
+      it("returns a gray pixel") { expect(pix[-1][-1]).must_equal(gray) }
+      it("returns a cyan pixel") { expect(pix[-1][0]).must_equal(cyan) }
+      it("returns a green pixel") { expect(pix[0][-1]).must_equal(green) }
     end
 
     describe "after resizing and desaturating" do
@@ -489,7 +489,7 @@ describe CryMagick::Image do
   describe "#combine_options" do
     it "chains multiple options and executes them in one command" do
       expect_to_change(->{ subject.dimensions }, to: {20, 30}) do
-        subject.combine_options { |c| c.resize "20x30!" }
+        subject.combine_options(&.resize("20x30!"))
       end
     end
 
