@@ -10,7 +10,7 @@ Add this to your application's `shard.yml`:
 dependencies:
   crymagick:
     github: imdrasil/crymagick
-    version: 0.2.2
+    version: 0.2.3
 ```
 
 ## Requirements

@@ -33,7 +33,7 @@ module Helper
       File.join("spec", "fixtures", name)
     else
       path = random_path
-      FileUtils.cp image_path, path
+      FileUtils.cp(image_path, path)
       path
     end
   end
@@ -52,5 +52,11 @@ module Helper
     io = IO::Memory.new
     array.each { |e| io.write_bytes(e) }
     io.to_s
+  end
+
+  def clone_image(path)
+    new_path = random_path
+    FileUtils.cp(path, new_path)
+    new_path
   end
 end

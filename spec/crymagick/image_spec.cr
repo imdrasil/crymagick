@@ -5,6 +5,39 @@ describe CryMagick::Image do
   @subject : CryMagick::Image?
   let(:subject) { CryMagick::Image.open(image_path) }
 
+  it "create temfile" do
+    file = described_class.open("spec/fixtures/cylinder_shaded.png")
+    expect(File.exists?(file.path)).must_equal(true)
+  end
+
+  it "has attributes" do
+    expect(subject.type).must_match(/^[A-Z]+$/)
+    expect(subject.mime_type).must_match(/^image\/[a-z]+$/)
+    expect(subject.width).wont_equal(0)
+    expect(subject.height).wont_equal(0)
+    subject.dimensions
+    expect(subject.size).wont_equal(0)
+    expect(subject.human_size).wont_be_empty
+    expect_be_a(subject.colorspace, String)
+    expect_be_a(subject.resolution, Tuple(Float64, Float64))
+    expect(subject.signature).must_match(/[[:alnum:]]{64}/)
+  end
+
+  it "generates attributes of layers" do
+    expect(subject.layers[0].type).must_match(/^[A-Z]+$/)
+    expect(subject.layers[0].size > 0).must_equal true
+  end
+
+  it "changes colorspace when called with an argument" do
+    # TODO: add correct expectation
+    subject.colorspace("Gray")
+  end
+
+  it "changes size when called with an argument" do
+    # TODO: add correct expectation
+    subject.size("20x20")
+  end
+
   describe ".read" do
     it "reads image from String" do
       string = File.read(image_path)
@@ -112,6 +145,18 @@ describe CryMagick::Image do
       expect(image.valid?).must_equal(true)
       expect(image.type).must_equal("JPEG")
       expect(image.dimensions).must_equal(dimensions)
+    end
+  end
+
+  describe ".build" do
+    it "chains multiple options and executes them in one command" do
+      image = described_class.build(clone_image(image_path)) do |m|
+        m.resize("20x30!")
+        m.colorspace("CMYK")
+      end
+
+      expect(image.dimensions).must_equal({20, 30})
+      expect(image.data["colorspace"].as_s).must_equal("CMYK")
     end
   end
 
@@ -248,11 +293,6 @@ describe CryMagick::Image do
       image = described_class.new(image_path(:not))
       expect(image.valid?).must_equal(false)
     end
-  end
-
-  it "create temfile" do
-    file = described_class.open("spec/fixtures/cylinder_shaded.png")
-    expect(File.exists?(file.path)).must_equal(true)
   end
 
   describe "#write" do
@@ -411,34 +451,6 @@ describe CryMagick::Image do
     end
   end
 
-  it "has attributes" do
-    expect(subject.type).must_match(/^[A-Z]+$/)
-    expect(subject.mime_type).must_match(/^image\/[a-z]+$/)
-    expect(subject.width).wont_equal(0)
-    expect(subject.height).wont_equal(0)
-    subject.dimensions
-    expect(subject.size).wont_equal(0)
-    expect(subject.human_size).wont_be_empty
-    expect_be_a(subject.colorspace, String)
-    expect_be_a(subject.resolution, Tuple(Float64, Float64))
-    expect(subject.signature).must_match(/[[:alnum:]]{64}/)
-  end
-
-  it "generates attributes of layers" do
-    expect(subject.layers[0].type).must_match(/^[A-Z]+$/)
-    expect(subject.layers[0].size > 0).must_equal true
-  end
-
-  it "changes colorspace when called with an argument" do
-    # TODO: add correct expectation
-    subject.colorspace("Gray")
-  end
-
-  it "changes size when called with an argument" do
-    # TODO: add correct expectation
-    subject.size("20x20")
-  end
-
   describe "#exif" do
     let(:subject) { described_class.new(image_path(:exif)) }
 
@@ -488,8 +500,13 @@ describe CryMagick::Image do
 
   describe "#combine_options" do
     it "chains multiple options and executes them in one command" do
-      expect_to_change(->{ subject.dimensions }, to: {20, 30}) do
-        subject.combine_options(&.resize("20x30!"))
+      expect_to_change(->{ subject.data["colorspace"].as_s }, to: "Gray") do
+        expect_to_change(->{ subject.dimensions }, to: {20, 30}) do
+          subject.combine_options do |m|
+            m.resize("20x30!")
+            m.colorspace("Gray")
+          end
+        end
       end
     end
 
@@ -500,6 +517,12 @@ describe CryMagick::Image do
 
     it "returns self" do
       expect(subject.combine_options { }).must_equal subject
+    end
+
+    it "raises an error if #format is called" do
+      assert_raises(ArgumentError) do
+        subject.combine_options(&.format("png"))
+      end
     end
   end
 

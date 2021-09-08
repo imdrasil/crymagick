@@ -1,10 +1,10 @@
 name: crymagick
-version: 0.2.2
+version: 0.2.3
 
 authors:
   - Roman Kalnytskyi <moranibaca@gmail.com>
 
-crystal: 1.0.0
+crystal: ">= 0.35.0"
 
 license: MIT
 development_dependencies:
