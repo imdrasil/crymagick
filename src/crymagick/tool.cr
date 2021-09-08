@@ -2,12 +2,6 @@ module CryMagick
   class Tool
     CREATION_OPERATORS = %w(xc canvas logo rose gradient radial-gradient plasma pattern label caption text pango)
 
-    def self.build(name : String) : String
-      instance = new(name)
-      yield instance
-      instance.call
-    end
-
     getter name : String, args
     @whiny : Bool
 
@@ -19,6 +13,12 @@ module CryMagick
     def initialize(@name, options : Hash(Symbol, Bool) = {} of Symbol => Bool)
       @args = [] of String
       @whiny = options.has_key?(:whiny) ? options[:whiny] : Configuration.whiny
+    end
+
+    def self.build(name : String) : String
+      instance = new(name)
+      yield instance
+      instance.call
     end
 
     def call : String
@@ -101,9 +101,7 @@ module CryMagick
     # Currently notification about dynamically generated methods will be printed out
     # to stdout during compilation
     macro method_missing(call)
-      {% if flag?(:crymagick_debug) %}
-        {% p "#{@type}##{call.id} is generated".id %}
-      {% end %}
+      {% flag?(:crymagick_debug) && p("#{@type}##{call.id} is generated".id) %}
       def {{call.name.id}}(*args)
         send({{call.name.tr("_", "-").id.stringify}}, *args)
       end

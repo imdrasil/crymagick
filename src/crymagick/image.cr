@@ -22,6 +22,7 @@ module CryMagick
     # TODO: allow to pass url
     def self.open(path : String, ext : String? = nil)
       raise "File is not exists" unless File.exists?(path)
+
       ext ||= File.extname(path)
       File.open(path) { |f| read(f, ext) }
     end
@@ -54,15 +55,19 @@ module CryMagick
       target_image
     end
 
+    def self.build(path : String, tempfile = nil)
+      new(path, tempfile).combine_options { |m| yield m }
+    end
+
     getter path, tempfile : ::File?
     protected setter path
 
-    def tempfile!
-      @tempfile.not_nil!
-    end
-
     def initialize(@path : String, @tempfile = nil)
       @info = Info.new(@path)
+    end
+
+    def tempfile!
+      @tempfile.not_nil!
     end
 
     def ==(other : Image)
@@ -154,10 +159,18 @@ module CryMagick
       end
     end
 
+    # This is used to change the format of the image. That is, from "tiff to jpg" or something like that.
+    #
+    # Once you run it, the instance is pointing to a new file with a new extension!
+    #
+    # *DANGER*: This renames the file that the instance is pointing to. So, if you manually opened the file with
+    # Image.new(file_path)... Then that file is DELETED! If you used Image.open(file) then you are OK. The original
+    # file will still be there. But, any changes to it might not be...
+    #
     # page = -1 for all frames
     #
     # TODO: fix converting several frames - point current image to first one (now it points to empty img)
-    def format(_format, page : String = "0", read_options : Hash(String, String) = {} of String => String)
+    def format(_format, page : String | Int = "0", read_options : Hash(String, String) = {} of String => String)
       new_temp_file = nil
       new_path =
         if @tempfile
@@ -168,7 +181,7 @@ module CryMagick
           (parts.size == 1 ? parts[0] : parts[0...-1].join("")) + ".#{_format}"
         end
       input_path = path.clone
-      input_path += "[#{page}]" if page != "-1" && !layer?
+      input_path += "[#{page}]" if page.to_s != "-1" && !layer?
 
       Tool::Convert.build do |con|
         read_options.each do |key, value|
@@ -262,7 +275,7 @@ module CryMagick
     end
 
     def mogrify(page : Int32? = nil)
-      Tool::Mogrify.build do |builder|
+      Tool::MogrifyRestricted.build do |builder|
         yield builder
         builder << (page ? "#{path}[#{page}]" : path)
       end

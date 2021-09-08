@@ -38,6 +38,7 @@ module CryMagick
       def clear
         @info.clear
         @resolution.clear
+        @data = nil
         {% for attr in ALL_ATTRS %}
           {% if attr != "resolution" %}
             @{{attr.id}} = nil
